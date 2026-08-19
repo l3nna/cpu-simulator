@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-using Byte = unsigned char;
-using Word = unsigned short;
-
-using u32 = unsigned int;
+using Byte = unsigned char; // 8-bitni podatak (0 - 255)
+using Word = unsigned short; // 16-bitni podatak (0 - 65535)
+using u32 = unsigned int; // 32-bitni neoznačeni ceo broj
 
 
 struct Memory {
@@ -43,29 +42,30 @@ struct Memory {
 
 struct CPU {
 
-   Word PC; //program counter
-   Word SP; //stack pointer
+   Word PC; // Program Counter (Pokazivač instrukcije)
+   Word SP; // Stack Pointer (Pokazivač steka)
 
-   Byte A, X, Y; //registers
+   Byte A, X, Y; // Opšti registri (Akumulator, X, Y)
 
-   Byte C : 1; //status flags
-   Byte Z : 1;
-   Byte I : 1;
-   Byte D : 1;
-   Byte B : 1;
-   Byte V : 1;
-   Byte N : 1;
+   // Statusni flegovi (bit-fields od po 1 bit):
+   Byte C : 1; // Carry (Prenos)
+   Byte Z : 1; // Zero (Nula)
+   Byte I : 1; // Interrupt Disable (Zabrana prekida)
+   Byte D : 1; // Decimal Mode (Decimalni mod)
+   Byte B : 1; // Break Command
+   Byte V : 1; // Overflow (Prekoračenje)
+   Byte N : 1; // Negative (Negativan broj)
 
    static constexpr Byte 
-      INS_LDA_IM = 0xA9,
-      INS_LDA_ZP = 0xA5,
-      INS_LDA_ZPX = 0xB5,
-      INS_JSR = 0x20;
+      INS_LDA_IM  = 0xA9, // LDA Immediate
+      INS_LDA_ZP  = 0xA5, // LDA Zero Page
+      INS_LDA_ZPX = 0xB5, // LDA Zero Page,X
+      INS_JSR     = 0x20; // Jump to Subroutine
       
 
    void LDASetStatus() {
-      Z = (A == 0);
-      N = (A & 0b10000000) > 0;
+      Z = (A == 0);                   // Z fleg je 1 ako je Akumulator 0
+      N = (A & 0b10000000) > 0;       // N fleg je 1 ako je 7. bit akumulatora (znak) jednak 1
    }
 
    void Reset(Memory& memory) {
@@ -172,4 +172,14 @@ int main() {
    cpu.Execute(3, memory);
 
    return 0;
+
+   printf("=== Stanje CPU-a nakon izvrsavanja ===\n");
+   printf("Program Counter (PC) : 0x%04X\n", cpu.PC);
+   printf("Registar A           : 0x%02X\n", cpu.A);
+   printf("Negative Flag (N)    : %d\n", cpu.N);
+   printf("Zero Flag (Z)        : %d\n", cpu.Z);
+
+   return 0;
 }
+
+
