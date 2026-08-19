@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// http://www.obelisk.me.uk/6502/
 
 namespace m6502
 {
